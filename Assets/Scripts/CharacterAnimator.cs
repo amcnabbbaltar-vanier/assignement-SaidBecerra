@@ -1,18 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private Animator animator;
+    private CharacterMovement movement;
+
     void Start()
     {
-        
+        animator = GetComponent<Animator>();
+        movement = GetComponent<CharacterMovement>();
+        CharacterMovement.OnDoubleJump += HandleDoubleJump;
     }
 
-    // Update is called once per frame
+    void OnDestroy()
+    {
+        CharacterMovement.OnDoubleJump -= HandleDoubleJump;
+    }
+
     void Update()
     {
-        
+        animator.SetFloat("CharacterSpeed", Mathf.Abs(movement.moveInput));
+        animator.SetBool("isGrounded", movement.isGrounded);
+    }
+
+    void HandleDoubleJump()
+    {
+        animator.SetTrigger("doFlip");
     }
 }

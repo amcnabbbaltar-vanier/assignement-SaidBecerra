@@ -56,5 +56,11 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "420_541_Assignement.sln"
+    "dotnet.defaultSolution": "assignement-SaidBecerra.sln",
+    "cSpell.words": [
+        "Behaviour",
+        "Lerp",
+        "Mathf",
+        "Rigidbody"
+    ]
 }
