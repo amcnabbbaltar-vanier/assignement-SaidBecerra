@@ -52,7 +52,7 @@ public class CharacterMovement : MonoBehaviour
     void FixedUpdate()
     {
         float speed = isRunning ? walkSpeed * runMultiplier : walkSpeed;
-        rb.velocity = new Vector3(0f, rb.velocity.y, moveInput * speed);
+        rb.linearVelocity = new Vector3(0f, rb.linearVelocity.y, moveInput * speed);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -86,7 +86,7 @@ public class CharacterMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Trap"))
         {
-            GameManager.instance.TakeDamage();
+            GameManager.instance.TakeTrapDamage();
         }
     }
 
@@ -176,14 +176,14 @@ public class CharacterMovement : MonoBehaviour
 
     void PerformJump(float force)
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
     }
 
     void PerformDoubleJump()
     {
         hasDoubleJumped = true;
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
         OnDoubleJump?.Invoke();
     }
