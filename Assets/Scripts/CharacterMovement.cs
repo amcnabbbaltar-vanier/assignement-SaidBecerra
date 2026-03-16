@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -28,18 +27,12 @@ public class CharacterMovement : MonoBehaviour
 
     private Rigidbody rb;
     public float moveInput;
-
     public bool isGrounded;
     private bool isRunning;
     private bool isHoldingJump;
     private bool hasDoubleJumped;
     private float jumpHoldTime;
     private bool jumpQueued;
-
-    public Text scoreText;
-    public GameObject finalScorePanel;
-    public Text finalScoreText;
-    private int score = 0;
 
     void Start()
     {
@@ -59,7 +52,7 @@ public class CharacterMovement : MonoBehaviour
     void FixedUpdate()
     {
         float speed = isRunning ? walkSpeed * runMultiplier : walkSpeed;
-        rb.velocity = new Vector3(moveInput * speed, rb.velocity.y, 0f);
+        rb.velocity = new Vector3(0f, rb.velocity.y, moveInput * speed);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -85,8 +78,15 @@ public class CharacterMovement : MonoBehaviour
         else if (collision.gameObject.CompareTag("Score"))
         {
             Destroy(collision.gameObject);
-            score += 50;
-            scoreText.text = "Score: " + score;
+            GameManager.instance.AddScore(50);
+        }
+        else if (collision.gameObject.CompareTag("DeathPlane"))
+        {
+            GameManager.instance.TakeDamage();
+        }
+        else if (collision.gameObject.CompareTag("Trap"))
+        {
+            GameManager.instance.TakeDamage();
         }
     }
 
@@ -125,12 +125,10 @@ public class CharacterMovement : MonoBehaviour
 
     void HandleFacingDirection()
     {
-        if (moveInput != 0)
-        {
-            Vector3 scale = transform.localScale;
-            scale.x = moveInput > 0 ? Mathf.Abs(scale.x) : -Mathf.Abs(scale.x);
-            transform.localScale = scale;
-        }
+        if (moveInput > 0)
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        else if (moveInput < 0)
+            transform.rotation = Quaternion.Euler(0f, 180f, 0f);
     }
 
     void HandleJumpInput()
@@ -178,14 +176,14 @@ public class CharacterMovement : MonoBehaviour
 
     void PerformJump(float force)
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, 0f);
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(Vector3.up * force, ForceMode.Impulse);
     }
 
     void PerformDoubleJump()
     {
         hasDoubleJumped = true;
-        rb.velocity = new Vector3(rb.velocity.x, 0f, 0f);
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
         OnDoubleJump?.Invoke();
     }
@@ -228,11 +226,5 @@ public class CharacterMovement : MonoBehaviour
     {
         hasDoubleJumpPowerUp = true;
         jumpBoostTimer = 30f;
-    }
-
-    public void ShowFinalScore()
-    {
-        finalScorePanel.SetActive(true);
-        finalScoreText.text = "Final Score: " + score;
     }
 }
